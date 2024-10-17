@@ -12,7 +12,7 @@ func SetupRoutes() *mux.Router {
 
 	r.HandleFunc("/signup", controllers.Signup).Methods("POST")
 	r.HandleFunc("/login", controllers.Login).Methods("POST")
-	r.HandleFunc("/uploadResume", utils.AuthMiddleware(controllers.UploadResume)).Methods("POST")
+	r.HandleFunc("/uploadResume", utils.AuthMiddleware(controllers.UploadResumeHandler)).Methods("POST") // Use the updated handler
 	r.HandleFunc("/admin/job", utils.AdminAuthMiddleware(controllers.CreateJob)).Methods("POST")
 
 	return r

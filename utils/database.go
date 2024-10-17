@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,7 +15,8 @@ var Client *mongo.Client
 
 func ConnectDB() {
 	// Create a new MongoDB client using the updated method
-	clientOptions := options.Client().ApplyURI("mongodb+srv://Aamirlone:Aamirlone@cluster0.1zwiz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+	mongoDBUR := os.Getenv("MONGODB_URI")
+	clientOptions := options.Client().ApplyURI(mongoDBUR)
 
 	// Use mongo.Connect instead of mongo.NewClient
 	client, err := mongo.Connect(context.TODO(), clientOptions)

@@ -8,10 +8,10 @@ import (
 
 var jwtKey = []byte("a_very_secret_key_that_is_long_and_random")
 
-type Claims struct {
-	Email string `json:"email"`
-	jwt.StandardClaims
-}
+// type Claims struct {
+// 	Email string `json:"email"`
+// 	jwt.StandardClaims
+// }
 
 func GenerateJWT(email string) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)

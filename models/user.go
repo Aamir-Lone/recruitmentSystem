@@ -7,7 +7,7 @@ type User struct {
 	Name            string             `bson:"name"`
 	Email           string             `bson:"email"`
 	Address         string             `bson:"address"`
-	UserType        string             `bson:"userType"`
+	UserType        string             `bson:"userType"` // "Applicant" or "Admin"
 	PasswordHash    string             `bson:"passwordHash"`
 	ProfileHeadline string             `bson:"profileHeadline"`
 	Profile         Profile            `bson:"profile,omitempty"`
@@ -19,4 +19,6 @@ type Profile struct {
 	Education         string `bson:"education"`
 	Experience        string `bson:"experience"`
 	Phone             string `bson:"phone"`
+	Email             string `bson:"email"`
+	Name              string `bson:"name"`
 }
