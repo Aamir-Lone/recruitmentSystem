@@ -5,65 +5,40 @@ import (
 	"RecruitmentManagementSystem/utils"
 	"context"
 	"errors"
-	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserRequest struct {
-	Name            string `json:"name"`
-	Email           string `json:"email"`
-	Address         string `json:"address"`
-	UserType        string `json:"user_type"` // Admin or Applicant
-	Password        string `json:"password"`
-	ProfileHeadline string `json:"profile_headline"`
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
 }
 
-type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
 
-func CreateUser(userRequest UserRequest) error {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userRequest.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-
-	user := models.User{
-		Name:            userRequest.Name,
-		Email:           userRequest.Email,
-		Address:         userRequest.Address,
-		UserType:        userRequest.UserType,
-		PasswordHash:    string(hashedPassword),
-		ProfileHeadline: userRequest.ProfileHeadline,
-	}
-
-	collection := utils.Client.Database("recruitment_management").Collection("users")
-	_, err = collection.InsertOne(context.TODO(), user)
-	return err
-}
-
-func Login(userRequest LoginRequest) (string, error) {
-	collection := utils.Client.Database("recruitment_management").Collection("users")
+func AuthenticateUser(email, password string) (*models.User, error) {
 	var user models.User
-	err := collection.FindOne(context.TODO(), bson.M{"email": userRequest.Email}).Decode(&user)
+	collection := utils.GetCollection("users")
+	err := collection.FindOne(context.TODO(), bson.M{"email": email}).Decode(&user)
 	if err != nil {
-		return "", errors.New("user not found")
+		return nil, errors.New("user not found")
 	}
+	if !CheckPasswordHash(password, user.PasswordHash) {
+		return nil, errors.New("incorrect password")
+	}
+	return &user, nil
+}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(userRequest.Password))
+func CreateUser(user models.User) (*models.User, error) {
+	user.PasswordHash, _ = HashPassword(user.PasswordHash)
+	collection := utils.GetCollection("users")
+	_, err := collection.InsertOne(context.TODO(), user)
 	if err != nil {
-		return "", errors.New("incorrect password")
+		return nil, err
 	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"email": user.Email,
-		"exp":   time.Now().Add(time.Hour * 72).Unix(),
-	})
-
-	tokenString, err := token.SignedString([]byte("your_secret_key"))
-	return tokenString, err
+	return &user, nil
 }

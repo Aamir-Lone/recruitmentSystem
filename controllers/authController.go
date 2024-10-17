@@ -1,42 +1,41 @@
 package controllers
 
 import (
+	"RecruitmentManagementSystem/models"
 	"RecruitmentManagementSystem/services"
+	"RecruitmentManagementSystem/utils"
 	"encoding/json"
 	"net/http"
 )
 
-func SignUp(w http.ResponseWriter, r *http.Request) {
-	var user services.UserRequest
-	err := json.NewDecoder(r.Body).Decode(&user)
+func Signup(w http.ResponseWriter, r *http.Request) {
+	var user models.User
+	json.NewDecoder(r.Body).Decode(&user)
+	createdUser, err := services.CreateUser(user)
 	if err != nil {
-		http.Error(w, "Invalid request", http.StatusBadRequest)
+		http.Error(w, "Unable to create user", http.StatusBadRequest)
 		return
 	}
-
-	err = services.CreateUser(user)
-	if err != nil {
-		http.Error(w, "Error creating user", http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode("User created successfully")
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(createdUser)
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	var user services.LoginRequest
-	err := json.NewDecoder(r.Body).Decode(&user)
+	var credentials models.User
+	json.NewDecoder(r.Body).Decode(&credentials)
+
+	user, err := services.AuthenticateUser(credentials.Email, credentials.PasswordHash)
 	if err != nil {
-		http.Error(w, "Invalid request", http.StatusBadRequest)
+		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 		return
 	}
 
-	token, err := services.Login(user)
+	token, err := utils.GenerateJWT(user.Email)
 	if err != nil {
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
 		return
 	}
 
-	json.NewEncoder(w).Encode(token)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"token": token})
 }

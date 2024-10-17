@@ -7,15 +7,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func SetupRoutes(r *mux.Router) {
-	// Apply middleware
-	r.Use(utils.JWTAuthMiddleware)
+func SetupRoutes() *mux.Router {
+	r := mux.NewRouter()
 
-	r.HandleFunc("/signup", controllers.SignUp).Methods("POST")
+	r.HandleFunc("/signup", controllers.Signup).Methods("POST")
 	r.HandleFunc("/login", controllers.Login).Methods("POST")
+	r.HandleFunc("/uploadResume", utils.AuthMiddleware(controllers.UploadResume)).Methods("POST")
+	r.HandleFunc("/admin/job", utils.AdminAuthMiddleware(controllers.CreateJob)).Methods("POST")
 
-	r.HandleFunc("/uploadResume", controllers.UploadResume).Methods("POST")
-	r.HandleFunc("/admin/job", controllers.CreateJob).Methods("POST")
-	r.HandleFunc("/admin/job/{job_id}", controllers.GetJob).Methods("GET")
-	r.HandleFunc("/admin/applicants", controllers.GetAllApplicants).Methods("GET")
+	return r
 }
