@@ -2,11 +2,15 @@ package routers
 
 import (
 	"RecruitmentManagementSystem/controllers"
+	"RecruitmentManagementSystem/utils"
 
 	"github.com/gorilla/mux"
 )
 
 func SetupRoutes(r *mux.Router) {
+	// Apply middleware
+	r.Use(utils.JWTAuthMiddleware)
+
 	r.HandleFunc("/signup", controllers.SignUp).Methods("POST")
 	r.HandleFunc("/login", controllers.Login).Methods("POST")
 

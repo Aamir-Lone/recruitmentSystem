@@ -14,11 +14,21 @@ type User struct {
 	Profile         Profile            `bson:"profile"`
 }
 
-// Profile structure
+//Profile structure
 type Profile struct {
-	ResumeFileAddress string `bson:"resumeFileAddress"`
-	Skills            string `bson:"skills"`
-	Education         string `bson:"education"`
-	Experience        string `bson:"experience"`
-	Phone             string `bson:"phone"`
+	ResumeFileAddress string       `bson:"resumeFileAddress"`
+	Skills            []string     `bson:"skills"`
+	Education         []Education  `bson:"education"`  // Updated to slice of Education structs
+	Experience        []Experience `bson:"experience"` // Updated to slice of Experience structs
+	Phone             string       `bson:"phone"`
+}
+
+type Education struct {
+	Name  string   `json:"name"`
+	Dates []string `json:"dates"` // This is an array of strings
+}
+
+type Experience struct {
+	Title        string `json:"title"`
+	Organization string `json:"organization"`
 }
