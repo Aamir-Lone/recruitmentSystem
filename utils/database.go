@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -14,9 +15,16 @@ import (
 var Client *mongo.Client
 
 func ConnectDB() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	// Get the MongoDB URI from the .env file
+	mongoURI := os.Getenv("MONGODB_URI")
 	// Create a new MongoDB client using the updated method
-	mongoDBUR := os.Getenv("MONGODB_URI")
-	clientOptions := options.Client().ApplyURI(mongoDBUR)
+
+	clientOptions := options.Client().ApplyURI(mongoURI)
 
 	// Use mongo.Connect instead of mongo.NewClient
 	client, err := mongo.Connect(context.TODO(), clientOptions)

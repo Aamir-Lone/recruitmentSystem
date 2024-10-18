@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -47,6 +48,13 @@ func UploadResume(filePath string, userID string) error {
 		return fmt.Errorf("failed to create request: %v", err)
 	}
 	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	error := godotenv.Load()
+	if error != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	// Get the MongoDB URI from the .env file
 	apiKey := os.Getenv("API_KEY")
 	req.Header.Set("apikey", apiKey)
 

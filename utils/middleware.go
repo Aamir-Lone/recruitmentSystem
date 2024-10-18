@@ -73,11 +73,3 @@ func AdminAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		next.ServeHTTP(w, r)
 	}
 }
-
-// ValidateJWT is a placeholder function. You should implement your JWT validation logic here.
-// func ValidateJWT(token string) (Claims, bool) {
-// 	// Implement JWT validation logic and extract claims
-// 	// This is a placeholder for demonstration
-// 	// Replace with actual JWT validation
-// 	return Claims{Email: "example@example.com", UserID: "12345", IsAdmin: true}, true
-// }

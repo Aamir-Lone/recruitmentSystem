@@ -6,7 +6,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-var jwtKey = []byte("a_very_secret_key_that_is_long_and_random")
+var jwtKey = []byte("this is a_very_secret_key_that_is_long_and_random_haha")
 
 // type Claims struct {
 // 	Email string `json:"email"`
