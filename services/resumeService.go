@@ -53,8 +53,8 @@ func UploadResume(filePath string, userID string) error {
 	if error != nil {
 		log.Fatal("Error loading .env file")
 	}
-	//apiKey := os.Getenv("API_KEY")// Get the MongoDB URI from the .env file
-	req.Header.Set("apikey", "0bWeisRWoLj3UdXt3MXMSMWptYFIpQfS")
+	apiKey := os.Getenv("API_KEY") // Get the MongoDB URI from the .env file
+	req.Header.Set("apikey", apiKey)
 
 	// Send the request
 	client := &http.Client{}
