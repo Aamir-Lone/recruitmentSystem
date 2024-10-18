@@ -16,7 +16,7 @@ func UploadResumeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Retrieve the file from the form data
-	file, fileHeader, err := r.FormFile("file") // Get both file and its header
+	file, fileHeader, err := r.FormFile("resume") // Get both file and its header
 	if err != nil {
 		http.Error(w, "Unable to retrieve file from form data", http.StatusBadRequest)
 		return

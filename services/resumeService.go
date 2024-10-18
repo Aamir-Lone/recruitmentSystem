@@ -53,10 +53,8 @@ func UploadResume(filePath string, userID string) error {
 	if error != nil {
 		log.Fatal("Error loading .env file")
 	}
-
-	// Get the MongoDB URI from the .env file
-	apiKey := os.Getenv("API_KEY")
-	req.Header.Set("apikey", apiKey)
+	//apiKey := os.Getenv("API_KEY")// Get the MongoDB URI from the .env file
+	req.Header.Set("apikey", "0bWeisRWoLj3UdXt3MXMSMWptYFIpQfS")
 
 	// Send the request
 	client := &http.Client{}
@@ -68,7 +66,13 @@ func UploadResume(filePath string, userID string) error {
 
 	// Check for a successful response
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("received non-200 response: %s", resp.Status)
+
+		if resp.StatusCode == 429 {
+			retryAfter := resp.Header.Get("Retry-After")
+			log.Println("Too many requests. Retry after:", retryAfter)
+			// Convert `retryAfter` to time.Duration and wait
+			return fmt.Errorf("received non-200 response: %s\n Retry after:%s", resp.Status, retryAfter)
+		}
 	}
 
 	// Read the API response
